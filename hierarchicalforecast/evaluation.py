@@ -347,7 +347,7 @@ class HierarchicalEvaluation:
         h = len(Y_hat_df.loc[[Y_hat_df.index[0]]])
         model_names = Y_hat_df.drop(columns=drop_cols, axis=1).columns.to_list()
         fn_names = [fn.__name__ for fn in self.evaluators]
-        has_y_insample = any(['y_insample' in signature(fn).parameters for fn in self.evaluators])
+        has_y_insample = any(['y_train' in signature(fn).parameters for fn in self.evaluators])
         if has_y_insample and Y_df is None:
             raise Exception('At least one evaluator needs y insample, please pass `Y_df`')
         if benchmark is not None:
@@ -362,8 +362,8 @@ class HierarchicalEvaluation:
             if has_y_insample:
                 y_insample = Y_df.pivot(columns='ds', values='y').loc[cats].values
             for i_fn, fn in enumerate(self.evaluators):
-                if 'y_insample' in signature(fn).parameters:
-                    kwargs = {'y_insample': y_insample}
+                if 'y_train' in signature(fn).parameters:
+                    kwargs = {'y_train': y_insample}
                 else:
                     kwargs = {}
                 fn_name = fn_names[i_fn]
